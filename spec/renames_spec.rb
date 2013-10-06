@@ -31,6 +31,12 @@ describe Renames do
       Renames.renames(from, to)
       expect(to.all? { |t| File.exist? t }).to be_true
     end
+
+    it 'raises error when size of from differ from tos' do
+      from, to = %w(a.txt b.txt), %w(c.txt)
+      from.each { |f| File.write(f, '') }
+      expect{ Renames.renames(from, to) }.to raise_error(ArgumentError)
+    end
   end
 end
 
