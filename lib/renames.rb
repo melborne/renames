@@ -8,6 +8,7 @@ using CoreExtention
 class Renames
   class << self
     def rename(from, to)
+      validate_file_existence(to)
       ::File.rename(from, to) unless from == to
     end
 
@@ -31,9 +32,15 @@ class Renames
 
     def validate_num_of_files(froms, tos)
       unless [froms, tos].same? { |l| l.to_a.size }
-        raise ArgumentError, "Numbers of files must match 'from' and 'to'"
+        raise ArgumentError, "Numbers of files must match 'from' and 'to'."
       end
       true
+    end
+
+    def validate_file_existence(file)
+      if ::File.exist?(file)
+        raise ArgumentError, "File already exist: #{file}."
+      end
     end
   end
 end

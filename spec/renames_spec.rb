@@ -14,6 +14,13 @@ describe Renames do
       Renames.rename(from, to)
       expect(File.exist? to).to be_true
     end
+
+    it 'raise an error when target names exist in the target directory' do
+      from, to = 'abc.txt', 'xyz.txt'
+      File.write(from, '')
+      File.write(to, '')
+      expect{ Renames.rename(from, to) }.to raise_error(ArgumentError)
+    end
   end
 
   describe '.renames' do
