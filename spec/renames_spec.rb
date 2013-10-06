@@ -15,5 +15,22 @@ describe Renames do
       expect(File.exist? to).to be_true
     end
   end
+
+  describe '.renames' do
+    it "renames multiple files at once" do
+      from = %w(a.txt b.txt c.txt)
+      to   = %w(x.txt y.txt z.txt)
+      from.each { |f| File.write(f, '') }
+      Renames.renames(from, to)
+      expect(to.all? { |t| File.exist? t }).to be_true
+    end
+
+    it 'swaps file names' do
+      from, to = %w(a.txt b.txt), %w(b.txt a.txt)
+      from.each { |f| File.write(f, '') }
+      Renames.renames(from, to)
+      expect(to.all? { |t| File.exist? t }).to be_true
+    end
+  end
 end
 
