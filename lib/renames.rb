@@ -30,6 +30,7 @@ class Renames
       validate_num_of_files(froms, tos)
       msg = 'Any of the target files are already exist.'
       loop { |t| validate_file_existence(tos.next, froms.to_a, msg) }
+      validate_bad_filetype(froms)
     ensure
       tos.rewind
     end
@@ -44,6 +45,18 @@ class Renames
     def validate_file_existence(file, exclude, msg="File already exist: #{file}.")
       if ::File.exist?(file) && !exclude.include?(file)
         raise ArgumentError, msg
+      end
+      true
+    end
+
+    def validate_bad_filetype(files)
+      bad_files =
+        files.select do |f|
+          fs = ::File.lstat(f)
+          !fs.writable? || (fs.nlink > 1) || fs.symlink?
+        end
+      unless bad_files.empty?
+        raise ArgumentError, "Non-writable or link files included: #{bad_files.join(', ')}"
       end
       true
     end

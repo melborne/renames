@@ -53,6 +53,21 @@ describe Renames do
       msg = 'Any of the target files are already exist.'
       expect { Renames.renames(from, to) }.to raise_error(ArgumentError, msg)
     end
+
+    it 'raise an error when symbolic files are included' do
+      from, to = %w(a.txt b.txt), %w(x.txt y.txt)
+      File.write(from[0], '')
+      File.symlink(from[0], from[1])
+      expect { Renames.renames(from, to) }.to raise_error(ArgumentError)
+    end
+
+    it 'raise an error when non-writable files are included' do
+      pending "FakeFs's writable check is not work correctly."
+      from, to = %w(a.txt b.txt), %w(x.txt y.txt)
+      from.each { |f| File.write f, '' }
+      FileUtils.chmod(0555, 'b.txt')
+      expect{ Renames.renames(from, to) }.to raise_error(ArgumentError)
+    end
   end
 end
 
