@@ -15,7 +15,7 @@ describe Renames do
       expect(File.exist? to).to be_true
     end
 
-    it 'raise an error when target names exist in the target directory' do
+    it 'raise an error when the target name exist in the target directory' do
       from, to = 'abc.txt', 'xyz.txt'
       File.write(from, '')
       File.write(to, '')
@@ -43,6 +43,15 @@ describe Renames do
       from, to = %w(a.txt b.txt), %w(c.txt)
       from.each { |f| File.write(f, '') }
       expect{ Renames.renames(from, to) }.to raise_error(ArgumentError)
+    end
+
+    it 'raise an error before renaming any of files when a file exist' do
+      from = %w(a.txt b.txt c.txt)
+      to   = %w(x.txt y.txt z.txt)
+      from.each { |f| File.write(f, '') }
+      File.write('y.txt', '')
+      msg = 'Any of the target files are already exist.'
+      expect { Renames.renames(from, to) }.to raise_error(ArgumentError, msg)
     end
   end
 end
