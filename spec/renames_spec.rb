@@ -39,12 +39,6 @@ describe Renames do
       expect(to.all? { |t| File.exist? t }).to be_true
     end
 
-    it 'raises error when size of from differ from tos' do
-      from, to = %w(a.txt b.txt), %w(c.txt)
-      from.each { |f| File.write(f, '') }
-      expect{ Renames.renames(from, to) }.to raise_error(ArgumentError)
-    end
-
     it 'raise an error before renaming any of files when a file exist' do
       from = %w(a.txt b.txt c.txt)
       to   = %w(x.txt y.txt z.txt)
@@ -67,6 +61,16 @@ describe Renames do
       from.each { |f| File.write f, '' }
       FileUtils.chmod(0555, 'b.txt')
       expect{ Renames.renames(from, to) }.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '.renames_in_sequence' do
+    it 'renames in sequence' do
+      from = %w(a.txt f.txt c.txt)
+      to   = %w(a.txt b.txt c.txt)
+      from.each { |f| File.write f, '' }
+      Renames.renames_in_sequence(from)
+      expect(to.all? { |t| File.exist? t }).to be_true
     end
   end
 end

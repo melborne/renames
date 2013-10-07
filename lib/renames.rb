@@ -25,21 +25,20 @@ class Renames
       puts "finished: #{froms.to_a.size} files renamed."
     end
 
+    def renames_in_sequence(froms)
+      tos = build_sequencial_names(froms.first)
+      renames(froms, tos)
+    end
+
     private
     def validate_files(froms, tos)
-      validate_num_of_files(froms, tos)
       msg = 'Any of the target files are already exist.'
-      loop { |t| validate_file_existence(tos.next, froms.to_a, msg) }
+      exclude = froms.to_a
+      files = tos.take(froms.to_a.size).to_enum
+      loop { |t| validate_file_existence(files.next, exclude, msg) }
       validate_bad_filetype(froms)
     ensure
       tos.rewind
-    end
-
-    def validate_num_of_files(froms, tos)
-      unless [froms, tos].same? { |l| l.to_a.size }
-        raise ArgumentError, "Numbers of files must match 'from' and 'to'."
-      end
-      true
     end
 
     def validate_file_existence(file, exclude, msg="File already exist: #{file}.")
@@ -59,6 +58,20 @@ class Renames
         raise ArgumentError, "Non-writable or link files included: #{bad_files.join(', ')}"
       end
       true
+    end
+
+    def build_sequencial_names(top)
+      Enumerator.new do |y|
+        base, ext = split_filename(top)
+        loop { y << [base, ext].join; base = base.next }
+      end
+    end
+
+    # split to 'dir+base' and 'ext'
+    # ex. 'a.tar.gz' => ['a', '.tar.gz']
+    #     'b' => ['b', nil]
+    def split_filename(file)
+      file.match(/(.*?)(\..+)*$/) { [$1, $2] }
     end
   end
 end
