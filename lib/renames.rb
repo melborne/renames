@@ -25,8 +25,8 @@ class Renames
       puts "finished: #{froms.to_a.size} files renamed."
     end
 
-    def renames_in_sequence(froms)
-      tos = build_sequencial_names(froms.first)
+    def renames_in_sequence(froms, top:nil)
+      tos = build_sequencial_names(top || froms.first)
       renames(froms, tos)
     end
 

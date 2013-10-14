@@ -72,6 +72,14 @@ describe Renames do
       Renames.renames_in_sequence(from)
       expect(to.all? { |t| File.exist? t }).to be_true
     end
+
+    it 'renames in sequence with top name' do
+      from = %w(a.txt f.txt c.txt)
+      to   = %w(c.txt d.txt e.txt)
+      from.each { |f| File.write f, '' }
+      Renames.renames_in_sequence(from, top:'c.txt')
+      expect(to.all? { |t| File.exist? t }).to be_true
+    end
   end
 end
 
